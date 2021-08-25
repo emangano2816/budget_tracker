@@ -12,6 +12,11 @@ const FILES_TO_CACHE = [
 
 //install event handler
 self.addEventListener("install", function(event) {
+    //pre cache transaction data
+    event.waitUntil(
+        caches.open(DATA_CACHE_NAME).then((cache) => cache.add("/api/transaction"))
+    );
+    
     //pre cache static assets
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
@@ -20,5 +25,24 @@ self.addEventListener("install", function(event) {
     //activate service worker immediately after install complete
     self.skipWaiting();
 });
+
+//activate service-worker
+self.addEventListener("activate", function(event) {
+    event.waitUntil(
+        caches.keys().then(keyList => {
+            return Promise.all(
+                keyList.map(key => {
+                    if(key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
+                        console.log("Removing old cache data", key);
+                        return caches.delete(key);
+                    };
+                })
+            );
+        })
+    );
+
+    self.clients.claim();
+});
+
 
 
