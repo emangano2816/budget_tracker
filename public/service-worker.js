@@ -44,5 +44,37 @@ self.addEventListener("activate", function(event) {
     self.clients.claim();
 });
 
+//fetch
+self.addEventListener("fetch", function(event) {
+    //cache successful requests to API
+    if(event.request.url.includes("/api")) {
+        event.respondWith(
+            caches.open(DATA_CACHE_NAME).then(cache => {
+                return fetch(event.request)
+                    .then(response => {
+                        //if respons good, clone it and store it in cache
+                        if(response.status === 200) {
+                            cache.put(event.request.url, response.clone());
+                        }
 
+                        return response;
+                    })
+                    .catch(error => {
+                        //network request failed, try to get from cache
+                        return cache.match(event.request);
+                    });
+            }).catch(error => console.log(error))
+        );
+
+        return;
+    }
+    //if request not for API, server status assets using "offline-first" approach
+    event.respondWith(
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.match(event.request).then(response => {
+                return response || fetch(event.request);
+            });
+        })
+    );
+});
 
