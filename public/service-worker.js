@@ -50,11 +50,12 @@ self.addEventListener("activate", function(event) {
 self.addEventListener("fetch", function(event) {
     //cache successful requests to API
     if (event.request.url.includes("/api/")) {
+        console.log(event.request.url);
         event.respondWith(
             caches.open(DATA_CACHE_NAME).then(cache => {
                 return fetch(event.request)
                     .then(response => {
-                        //if respons good, clone it and store it in cache
+                        //if response good, clone it and store it in cache
                         if(response.status === 200) {
                             cache.put(event.request.url, response.clone());
                         }
@@ -67,7 +68,8 @@ self.addEventListener("fetch", function(event) {
                     });
             }).catch(error => console.log(error))
         );
-
+        
+        console.log("testing for error");
         return;
     }
     //if request not for API, server status assets using "offline-first" approach
