@@ -36,15 +36,16 @@ function checkDatabase() {
     const getAll = store.getAll();
 
     //if request succesful
-    getAll.onsucess = function () {
+    getAll.onsuccess = function () {
+        console.log("test");
         //if items in store, need to bulk add them when back online
         if (getAll.result.length > 0) {
-            fetch("/api/transaction/bulk", {
-                method: "POST",
+            fetch('/api/transaction/bulk', {
+                method: 'POST',
                 body: JSON.stringify(getAll.result),
                 headers: {
-                    Accept: "application/json, text/plain, */*",
-                    "Content-Type": "application/json",
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
                 },
             })
             .then((response) => response.json())
@@ -72,9 +73,9 @@ request.onsuccess = function (event) {
 
     //check if application is online before reading from db
     if (navigator.onLine) {
-        console.log("Backend online!");
+        console.log('Backend online!');
         checkDatabase();
-    }
+      }
 };
 
 const saveRecord = (record) => {
