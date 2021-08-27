@@ -30,4 +30,4 @@ No installation required.
 
 ## License
 
-This application is covered under the 
+This application is covered under the MIT license.
